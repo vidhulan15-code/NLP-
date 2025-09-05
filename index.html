@@ -51,7 +51,7 @@
             position: relative;
             max-width: 320px;
             width: 100%;
-            aspect-ratio: 2 / 1; /* Maintain shape */
+            aspect-ratio: 2 / 1;
             margin: 0 auto 25px;
         }
         .speedometer-gauge, .emoji-meter, .needle {
@@ -180,13 +180,14 @@
 
             function getDynamicSizes(container) {
                 if (!container) return null;
-                const width = container.offsetWidth;
-                const height = container.offsetHeight;
+                const rect = container.getBoundingClientRect();
+                const width = rect.width;
+                const height = rect.height;
                 const centerX = width / 2;
-                const radius = width * 0.42;
+                const radius = width * 0.45;
                 const lineWidth = radius * 0.22;
                 const centerY = height;
-                const positionRadius = radius - (lineWidth / 2);
+                const positionRadius = radius - (lineWidth * 0.7);
                 return { width, height, centerX, centerY, radius, lineWidth, positionRadius };
             }
 
@@ -197,10 +198,17 @@
                 const sizes = getDynamicSizes(container);
                 if (!sizes) return;
 
-                canvas.width = sizes.width;
-                canvas.height = sizes.height;
+                // --- High-Resolution Canvas Fix ---
+                const dpr = window.devicePixelRatio || 1;
+                canvas.width = sizes.width * dpr;
+                canvas.height = sizes.height * dpr;
+                canvas.style.width = `${sizes.width}px`;
+                canvas.style.height = `${sizes.height}px`;
                 
                 const ctx = canvas.getContext('2d');
+                ctx.scale(dpr, dpr); // Scale all drawing operations
+                // --- End Fix ---
+                
                 ctx.clearRect(0, 0, sizes.width, sizes.height);
 
                 const colors = maxValue === 10 ?
