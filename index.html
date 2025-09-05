@@ -6,6 +6,7 @@
     <title>ChatGPT Experience Survey</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
             background: #000000;
@@ -63,7 +64,11 @@
             font-weight: 600; text-align: center;
         }
         .speedometer-container {
-            position: relative; width: 320px; height: 200px; margin: 0 auto 25px;
+            position: relative;
+            max-width: 320px; /* Use max-width to allow shrinking */
+            width: 100%;
+            height: 200px;
+            margin: 0 auto 25px;
         }
         .speedometer-gauge {
             position: absolute; width: 100%; height: 100%;
@@ -98,12 +103,12 @@
         .rating-buttons {
             display: flex;
             justify-content: center;
-            gap: 6px; /* Reduced gap */
+            gap: 6px;
             margin-top: 20px;
-            flex-wrap: wrap; /* Allow buttons to wrap */
+            flex-wrap: wrap;
         }
         .rating-btn {
-            padding: 8px 12px; /* Reduced padding */
+            padding: 8px 12px;
             border: 2px solid #10a37f; background: #333333;
             color: #10a37f; border-radius: 20px; cursor: pointer;
             transition: all 0.3s; font-weight: 600;
@@ -155,6 +160,36 @@
             animation: spin 1s linear infinite; margin: 0 auto 15px;
         }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* --- Responsive Styles --- */
+        @media (max-width: 768px) {
+            body {
+                padding: 10px;
+            }
+            .header {
+                padding: 30px 15px;
+            }
+            .section {
+                padding: 20px 15px;
+            }
+            h1 {
+                font-size: 1.8em;
+            }
+            .welcome-section h2 {
+                font-size: 1.5em;
+            }
+            .logo {
+                width: 80px;
+                height: 80px;
+            }
+            .logo img {
+                width: 50px;
+                height: 50px;
+            }
+            .emoji {
+                font-size: 20px; /* Slightly smaller emojis on mobile */
+            }
+        }
     </style>
 </head>
 <body>
@@ -274,7 +309,6 @@
                     const emoji = document.createElement('div');
                     emoji.className = 'emoji';
 
-                    // Use different emoji sets based on the max value
                     let emojiSet;
                     if (maxValue === 10) {
                         emojiSet = ['😠', '😞', '😟', '😕', '😐', '🙂', '😊', '😁', '🤩', '🥳'];
@@ -332,7 +366,6 @@
                     positionEmojis('emojiMeter3', 5, ['Uncreative', 'Slightly', 'Neutral', 'Creative', 'Very Creative']);
                 } else if (index === 6) {
                     drawSpeedometer('speedometer4', 10);
-                    // Create labels for the 1-10 scale emojis
                     const labels = Array.from({length: 10}, (_, i) => String(i + 1));
                     positionEmojis('emojiMeter4', 10, labels);
                 }
@@ -396,7 +429,6 @@
                 showSection(currentSection);
             }
 
-            // --- Event Listeners ---
             document.getElementById('beginSurveyBtn').addEventListener('click', () => changeSection(1));
             document.getElementById('nextBtn1').addEventListener('click', () => changeSection(1));
             document.getElementById('prevBtn2').addEventListener('click', () => changeSection(-1));
