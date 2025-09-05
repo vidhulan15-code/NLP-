@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatGPT Experience Survey</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: #222222;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(255,255,255,0.1);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #10a37f, #147c5e);
+            padding: 40px 30px;
+            text-align: center;
+            color: white;
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 20px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .logo img {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        h1 { font-size: 2.2em; margin-bottom: 8px; font-weight: 700; }
+        .subtitle { font-size: 1em; opacity: 0.95; }
+        .section { padding: 30px; display: none; animation: fadeIn 0.5s ease-in-out; }
+        .section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .welcome-section { text-align: center; padding: 50px 30px; }
+        .welcome-section h2 { color: #ffffff; margin-bottom: 15px; font-size: 1.8em; }
+        .welcome-section p { color: #cccccc; line-height: 1.6; margin-bottom: 12px; font-size: 1em; }
+        .question-container {
+            margin-bottom: 30px; padding: 20px; background: #333333;
+            border-radius: 12px; border: 1px solid #444444;
+        }
+        .question-label {
+            font-size: 1.1em; color: #ffffff; margin-bottom: 20px;
+            font-weight: 600; text-align: center;
+        }
+        .speedometer-container {
+            position: relative; width: 320px; height: 200px; margin: 0 auto 25px;
+        }
+        .speedometer-gauge {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; z-index: 1;
+        }
+        .emoji-meter {
+            position: absolute; width: 100%; height: 100%;
+            top: 0; left: 0; z-index: 2; pointer-events: none;
+        }
+        .needle {
+            position: absolute; width: 4px; height: 90px; background: #ffffff;
+            bottom: 30px; left: 50%; transform-origin: bottom center;
+            transform: translateX(-50%) rotate(-90deg);
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 3;
+        }
+        .needle::after {
+            content: ''; position: absolute; width: 20px; height: 20px;
+            background: #ffffff; border-radius: 50%; bottom: -10px;
+            left: 50%; transform: translateX(-50%);
+        }
+        .emoji-container {
+            position: absolute; transform: translate(-50%, -50%);
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .emoji {
+            font-size: 28px; margin-bottom: 5px; transition: transform 0.3s;
+            color: white;
+        }
+        .emoji.active { transform: scale(1.3); }
+        .emoji-label { font-size: 0.8em; color: #cccccc; text-align: center; }
+        .rating-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 6px; /* Reduced gap */
+            margin-top: 20px;
+            flex-wrap: wrap; /* Allow buttons to wrap */
+        }
+        .rating-btn {
+            padding: 8px 12px; /* Reduced padding */
+            border: 2px solid #10a37f; background: #333333;
+            color: #10a37f; border-radius: 20px; cursor: pointer;
+            transition: all 0.3s; font-weight: 600;
+        }
+        .rating-btn:hover { background: #10a37f; color: white; transform: translateY(-2px); }
+        .rating-btn.selected { background: #10a37f; color: white; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label {
+            display: block; margin-bottom: 8px; color: #ffffff;
+            font-weight: 600; font-size: 1em;
+        }
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%; padding: 12px 15px; border: 2px solid #444444;
+            border-radius: 10px; font-size: 1em; transition: border-color 0.3s;
+            background: #333333; color: #ffffff;
+        }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+            outline: none; border-color: #10a37f;
+        }
+        .btn {
+            padding: 12px 30px; background: linear-gradient(135deg, #10a37f, #147c5e);
+            color: white; border: none; border-radius: 25px; font-size: 1em;
+            font-weight: 600; cursor: pointer; transition: all 0.3s;
+            display: inline-block; margin: 15px 8px;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 25px rgba(16, 163, 127, 0.3); }
+        .btn-secondary { background: #6c757d; }
+        .btn-secondary:hover { box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3); }
+        .navigation { display: flex; justify-content: center; padding-top: 15px; }
+        .thank-you { text-align: center; padding: 60px 30px; }
+        .thank-you h2 { color: #10a37f; font-size: 2.2em; margin-bottom: 15px; }
+        .thank-you p { color: #cccccc; font-size: 1.1em; line-height: 1.6; }
+        .checkmark {
+            width: 70px; height: 70px; margin: 0 auto 25px; background: #10a37f;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            animation: scaleIn 0.5s ease-in;
+        }
+        @keyframes scaleIn { from { transform: scale(0); } to { transform: scale(1); } }
+        .progress-bar { height: 6px; background: #444444; position: relative; overflow: hidden; }
+        .progress-fill {
+            height: 100%; background: linear-gradient(90deg, #10a37f, #147c5e);
+            width: 0%; transition: width 0.5s ease;
+        }
+        .required { color: #ff6b6b; }
+        .loading { display: none; text-align: center; margin: 20px 0; }
+        .loading-spinner {
+            border: 4px solid #444444; border-top: 4px solid #10a37f;
+            border-radius: 50%; width: 40px; height: 40px;
+            animation: spin 1s linear infinite; margin: 0 auto 15px;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <form id="surveyForm" action="https://script.google.com/macros/s/AKfycbwj-jkGpxHNFVncKi7pUwTlU4Z0eylh0KNm8wXfQs_jSGI3slk-uIg4JahG3HQlncenEA/exec" method="POST" onsubmit="return false;">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+
+            <div class="header">
+                <div class="logo">
+                    <img src="https://blog.logomyway.com/wp-content/uploads/2023/08/chatgpt-logo.png" alt="ChatGPT Logo">
+                </div>
+                <h1>ChatGPT Experience Survey</h1>
+                <p class="subtitle">Your feedback helps us improve AI assistance</p>
+            </div>
+
+            <div class="section active" id="section-0"><div class="welcome-section"><h2>Welcome to Our ChatGPT Feedback Survey!</h2><p>We value your experience with ChatGPT and would love to hear your thoughts.</p><p>This survey will take approximately 3-5 minutes to complete.</p><p><strong>Your responses will be used for our NLP research project and will help us improve AI assistance for everyone.</strong></p><button type="button" class="btn" id="beginSurveyBtn">Begin Survey</button></div></div>
+            <div class="section" id="section-1"><div class="question-container"><div class="question-label">1. Please describe the most significant strength and weakness you have encountered while using ChatGPT. <span class="required">*</span></div><div class="form-group"><textarea id="strengthWeakness" name="StrengthWeakness" rows="4" placeholder="Please be specific and provide examples if possible..." required></textarea></div></div><div class="navigation"><button type="button" class="btn" id="nextBtn1">Next</button></div></div>
+            <div class="section" id="section-2"><div class="question-container"><div class="question-label">2. In your opinion, for which specific task or domain does ChatGPT perform exceptionally well? <span class="required">*</span></div><div class="form-group"><textarea id="excellentTask" name="ExcellentTask" rows="3" placeholder="Please provide a brief example from your own experience..." required></textarea></div></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn2">Previous</button><button type="button" class="btn" id="nextBtn2">Next</button></div></div>
+            <div class="section" id="section-3"><div class="question-container"><div class="question-label">3. How frequently does ChatGPT provide an answer that meets your expectations?</div><div class="speedometer-container"><canvas id="speedometer1" class="speedometer-gauge" width="320" height="200"></canvas><div class="needle" id="needle1"></div><div class="emoji-meter" id="emojiMeter1"></div></div><div class="rating-buttons"><button type="button" class="rating-btn" data-question="1" data-rating="1">1</button><button type="button" class="rating-btn" data-question="1" data-rating="2">2</button><button type="button" class="rating-btn" data-question="1" data-rating="3">3</button><button type="button" class="rating-btn" data-question="1" data-rating="4">4</button><button type="button" class="rating-btn" data-question="1" data-rating="5">5</button></div></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn3">Previous</button><button type="button" class="btn" id="nextBtn3">Next</button></div></div>
+            <div class="section" id="section-4"><div class="question-container"><div class="question-label">4. How satisfied are you with the coherence and quality of ChatGPT's responses in prolonged conversations?</div><div class="speedometer-container"><canvas id="speedometer2" class="speedometer-gauge" width="320" height="200"></canvas><div class="needle" id="needle2"></div><div class="emoji-meter" id="emojiMeter2"></div></div><div class="rating-buttons"><button type="button" class="rating-btn" data-question="2" data-rating="1">1</button><button type="button" class="rating-btn" data-question="2" data-rating="2">2</button><button type="button" class="rating-btn" data-question="2" data-rating="3">3</button><button type="button" class="rating-btn" data-question="2" data-rating="4">4</button><button type="button" class="rating-btn" data-question="2" data-rating="5">5</button></div></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn4">Previous</button><button type="button" class="btn" id="nextBtn4">Next</button></div></div>
+            <div class="section" id="section-5"><div class="question-container"><div class="question-label">5. How would you rate the creativity and originality of ideas generated by ChatGPT?</div><div class="speedometer-container"><canvas id="speedometer3" class="speedometer-gauge" width="320" height="200"></canvas><div class="needle" id="needle3"></div><div class="emoji-meter" id="emojiMeter3"></div></div><div class="rating-buttons"><button type="button" class="rating-btn" data-question="3" data-rating="1">1</button><button type="button" class="rating-btn" data-question="3" data-rating="2">2</button><button type="button" class="rating-btn" data-question="3" data-rating="3">3</button><button type="button" class="rating-btn" data-question="3" data-rating="4">4</button><button type="button" class="rating-btn" data-question="3" data-rating="5">5</button></div></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn5">Previous</button><button type="button" class="btn" id="nextBtn5">Next</button></div></div>
+
+            <div class="section" id="section-6">
+                <div class="question-container">
+                    <div class="question-label">6. How likely are you to recommend ChatGPT to a peer for academic assistance? (1-10)</div>
+                    <div class="speedometer-container">
+                        <canvas id="speedometer4" class="speedometer-gauge" width="320" height="200"></canvas>
+                        <div class="needle" id="needle4"></div>
+                        <div class="emoji-meter" id="emojiMeter4"></div>
+                    </div>
+                    <div class="rating-buttons">
+                        <button type="button" class="rating-btn" data-question="4" data-rating="1">1</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="2">2</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="3">3</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="4">4</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="5">5</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="6">6</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="7">7</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="8">8</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="9">9</button>
+                        <button type="button" class="rating-btn" data-question="4" data-rating="10">10</button>
+                    </div>
+                </div>
+                <div class="navigation">
+                    <button type="button" class="btn btn-secondary" id="prevBtn6">Previous</button>
+                    <button type="button" class="btn" id="nextBtn6">Next</button>
+                </div>
+            </div>
+
+            <div class="section" id="section-7"><h2 style="margin-bottom: 25px; color: #ffffff; text-align: center;">Your Information</h2><p style="margin-bottom: 25px; color: #cccccc; text-align: center;">Please provide your contact details so we can follow up if needed.</p><div class="form-group"><label for="name">Full Name <span class="required">*</span></label><input type="text" id="name" name="Name" placeholder="Enter your full name" required></div><div class="form-group"><label for="email">Email Address <span class="required">*</span></label><input type="email" id="email" name="Email" placeholder="your.email@example.com" required></div><div class="form-group"><label for="usage">How often do you use ChatGPT?</label><select id="usage" name="UsageFrequency"><option value="">Select frequency</option><option value="daily">Daily</option><option value="weekly">Weekly</option><option value="monthly">Monthly</option><option value="rarely">Rarely</option></select></div><div class="form-group"><label for="purpose">Primary use of ChatGPT</label><select id="purpose" name="PrimaryPurpose"><option value="">Select primary use</option><option value="work">Work</option><option value="education">Education</option><option value="personal">Personal projects</option><option value="coding">Coding assistance</option><option value="creative">Creative writing</option><option value="research">Research</option></select></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn7">Previous</button><button type="button" class="btn" id="submitBtn">Submit Survey</button></div></div>
+            <div class="section" id="section-8"><div class="thank-you"><div class="checkmark"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><path d="M20 6L9 17L4 12" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h2>Thank You!</h2><p>Your survey has been successfully submitted.</p><p>We greatly appreciate your time and valuable feedback. Your insights will help us enhance ChatGPT.</p><button type="button" class="btn" id="resetBtn">Take Another Survey</button></div></div>
+            
+            <div class="loading" id="loadingIndicator">
+                <div class="loading-spinner"></div>
+                <p>Submitting your responses...</p>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentSection = 0;
+            const totalSections = 9;
+            const ratings = { 1: 0, 2: 0, 3: 0, 4: 0 };
+
+            const surveyForm = document.getElementById('surveyForm');
+
+            function drawSpeedometer(canvasId, maxValue = 5) {
+                const canvas = document.getElementById(canvasId);
+                if (!canvas || !canvas.getContext) return;
+                const ctx = canvas.getContext('2d');
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height - 30;
+                const radius = 120;
+
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                const colors = maxValue === 10 ?
+                    ['#ff4444', '#ff5544', '#ff6644', '#ff8844', '#ffaa44', '#ffcc44', '#ccdd44', '#aadd44', '#88dd44', '#44dd44'] :
+                    ['#ff4444', '#ff8844', '#ffcc44', '#aadd44', '#44dd44'];
+                const segmentAngle = Math.PI / colors.length;
+                const startAngle = Math.PI;
+
+                colors.forEach((color, index) => {
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, radius, startAngle + (index * segmentAngle) - 0.01, startAngle + ((index + 1) * segmentAngle) + 0.01);
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 30;
+                    ctx.stroke();
+                });
+            }
+
+            function positionEmojis(meterId, maxValue = 5, labels) {
+                const meter = document.getElementById(meterId);
+                if (!meter) return;
+                meter.innerHTML = '';
+                
+                const container = meter.closest('.speedometer-container');
+                const centerX = container.offsetWidth / 2;
+                const centerY = container.offsetHeight - 30;
+                const positionRadius = 120 - 35;
+
+                const segmentAngle = Math.PI / (maxValue - 1);
+                const startAngle = Math.PI;
+                
+                for (let i = 0; i < maxValue; i++) {
+                    const angle = startAngle + (i * segmentAngle);
+                    const x = centerX + positionRadius * Math.cos(angle);
+                    const y = centerY + positionRadius * Math.sin(angle);
+                    
+                    const emojiContainer = document.createElement('div');
+                    emojiContainer.className = 'emoji-container';
+                    emojiContainer.style.left = `${x}px`;
+                    emojiContainer.style.top = `${y}px`;
+                    
+                    const emoji = document.createElement('div');
+                    emoji.className = 'emoji';
+
+                    // Use different emoji sets based on the max value
+                    let emojiSet;
+                    if (maxValue === 10) {
+                        emojiSet = ['😠', '😞', '😟', '😕', '😐', '🙂', '😊', '😁', '🤩', '🥳'];
+                    } else {
+                        emojiSet = ['😞', '😕', '😐', '🙂', '😊'];
+                    }
+                    emoji.textContent = emojiSet[i] || '😐';
+                    
+                    const emojiLabel = document.createElement('div');
+                    emojiLabel.className = 'emoji-label';
+                    emojiLabel.textContent = labels[i];
+                    
+                    emojiContainer.appendChild(emoji);
+                    emojiContainer.appendChild(emojiLabel);
+                    meter.appendChild(emojiContainer);
+                }
+            }
+
+            function setRating(questionId, rating) {
+                ratings[questionId] = rating;
+                const needle = document.getElementById(`needle${questionId}`);
+                const maxValue = questionId === 4 ? 10 : 5;
+                const angle = -90 + (rating - 1) * (180 / (maxValue - 1));
+                if (needle) needle.style.transform = `translateX(-50%) rotate(${angle}deg)`;
+
+                document.querySelectorAll(`.rating-btn[data-question="${questionId}"]`).forEach(btn => {
+                    btn.classList.toggle('selected', parseInt(btn.dataset.rating) === rating);
+                });
+
+                document.querySelectorAll(`#emojiMeter${questionId} .emoji`).forEach((emoji, index) => {
+                    emoji.classList.toggle('active', (index + 1) === rating);
+                });
+            }
+
+            function updateProgressBar() {
+                const progress = currentSection > 0 ? (currentSection / (totalSections - 2)) * 100 : 0;
+                document.getElementById('progressBar').style.width = `${Math.min(progress, 100)}%`;
+            }
+
+            function showSection(index) {
+                document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+                const activeSection = document.getElementById(`section-${index}`);
+                if (activeSection) activeSection.classList.add('active');
+                
+                updateProgressBar();
+
+                if (index === 3) {
+                    drawSpeedometer('speedometer1', 5);
+                    positionEmojis('emojiMeter1', 5, ['Rarely', 'Sometimes', 'Neutral', 'Often', 'Always']);
+                } else if (index === 4) {
+                    drawSpeedometer('speedometer2', 5);
+                    positionEmojis('emojiMeter2', 5, ['Very Dissatisfied', 'Dissatisfied', 'Neutral', 'Satisfied', 'Very Satisfied']);
+                } else if (index === 5) {
+                    drawSpeedometer('speedometer3', 5);
+                    positionEmojis('emojiMeter3', 5, ['Uncreative', 'Slightly', 'Neutral', 'Creative', 'Very Creative']);
+                } else if (index === 6) {
+                    drawSpeedometer('speedometer4', 10);
+                    // Create labels for the 1-10 scale emojis
+                    const labels = Array.from({length: 10}, (_, i) => String(i + 1));
+                    positionEmojis('emojiMeter4', 10, labels);
+                }
+            }
+
+            function changeSection(step) {
+                if (step > 0) {
+                    if (currentSection === 1 && !document.getElementById('strengthWeakness').value.trim()) {
+                        alert('Please answer the question before proceeding.');
+                        return;
+                    }
+                    if (currentSection === 2 && !document.getElementById('excellentTask').value.trim()) {
+                        alert('Please answer the question before proceeding.');
+                        return;
+                    }
+                }
+                currentSection += step;
+                showSection(currentSection);
+            }
+
+            function submitSurvey() {
+                const nameInput = document.getElementById('name');
+                const emailInput = document.getElementById('email');
+                if (!nameInput.value.trim() || !emailInput.value.trim()) {
+                    alert('Please fill in all required fields (Name and Email)');
+                    return;
+                }
+
+                document.getElementById('loadingIndicator').style.display = 'block';
+                
+                const formData = new FormData(surveyForm);
+                formData.append('ExpectationsRating', ratings[1] || '');
+                formData.append('CoherenceRating', ratings[2] || '');
+                formData.append('CreativityRating', ratings[3] || '');
+                formData.append('RecommendationRating', ratings[4] || '');
+                
+                fetch(surveyForm.action, { method: 'POST', body: formData })
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    if (data.result === 'success') {
+                        changeSection(1);
+                    } else {
+                        alert('There was an error submitting your survey. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loadingIndicator').style.display = 'none';
+                    console.error('Error:', error);
+                    alert('A network error occurred. Please check your connection and try again.');
+                });
+            }
+
+            function resetSurvey() {
+                surveyForm.reset();
+                Object.keys(ratings).forEach(key => { ratings[key] = 0; });
+                document.querySelectorAll('.rating-btn.selected').forEach(btn => btn.classList.remove('selected'));
+                document.querySelectorAll('.needle').forEach(needle => needle.style.transform = `translateX(-50%) rotate(-90deg)`);
+                document.querySelectorAll('.emoji.active').forEach(emoji => emoji.classList.remove('active'));
+                currentSection = 0;
+                showSection(currentSection);
+            }
+
+            // --- Event Listeners ---
+            document.getElementById('beginSurveyBtn').addEventListener('click', () => changeSection(1));
+            document.getElementById('nextBtn1').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn2').addEventListener('click', () => changeSection(-1));
+            document.getElementById('nextBtn2').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn3').addEventListener('click', () => changeSection(-1));
+            document.getElementById('nextBtn3').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn4').addEventListener('click', () => changeSection(-1));
+            document.getElementById('nextBtn4').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn5').addEventListener('click', () => changeSection(-1));
+            document.getElementById('nextBtn5').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn6').addEventListener('click', () => changeSection(-1));
+            document.getElementById('nextBtn6').addEventListener('click', () => changeSection(1));
+            document.getElementById('prevBtn7').addEventListener('click', () => changeSection(-1));
+            document.getElementById('submitBtn').addEventListener('click', submitSurvey);
+            document.getElementById('resetBtn').addEventListener('click', resetSurvey);
+
+            document.querySelectorAll('.rating-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const questionId = parseInt(e.target.dataset.question);
+                    const rating = parseInt(e.target.dataset.rating);
+                    setRating(questionId, rating);
+                });
+            });
+
+            showSection(currentSection);
+        });
+    </script>
+</body>
+</html>
