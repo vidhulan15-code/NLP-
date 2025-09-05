@@ -156,7 +156,15 @@
                 <p class="subtitle">Your feedback helps us improve AI assistance</p>
             </div>
 
-            <div class="section active" id="section-0"><div class="welcome-section"><h2>Welcome!</h2><p>Your feedback on ChatGPT is valuable. This survey will take 3-5 minutes.</p><button type="button" class="btn" id="beginSurveyBtn">Begin Survey</button></div></div>
+            <div class="section active" id="section-0">
+                <div class="welcome-section">
+                    <h2>Welcome!</h2>
+                    <p>Your feedback on ChatGPT is valuable. This survey will take 3-5 minutes.</p>
+                    <p><strong>This survey data will be used for an NLP research project. Please provide thoughtful answers.</strong></p>
+                    <button type="button" class="btn" id="beginSurveyBtn">Begin Survey</button>
+                </div>
+            </div>
+            
             <div class="section" id="section-1"><div class="question-container"><div class="question-label">1. What is ChatGPT's biggest strength & weakness? <span class="required">*</span></div><div class="form-group"><textarea id="strengthWeakness" name="StrengthWeakness" rows="4" placeholder="e.g., Strength is speed, weakness is factual accuracy..." required></textarea></div></div><div class="navigation"><button type="button" class="btn" id="nextBtn1">Next</button></div></div>
             <div class="section" id="section-2"><div class="question-container"><div class="question-label">2. What task does ChatGPT excel at? <span class="required">*</span></div><div class="form-group"><textarea id="excellentTask" name="ExcellentTask" rows="3" placeholder="e.g., Summarizing articles, writing emails..." required></textarea></div></div><div class="navigation"><button type="button" class="btn btn-secondary" id="prevBtn2">Previous</button><button type="button" class="btn" id="nextBtn2">Next</button></div></div>
             
@@ -208,6 +216,8 @@
                 const ctx = canvas.getContext('2d');
                 ctx.scale(dpr, dpr);
                 
+                ctx.clearRect(0, 0, sizes.width, sizes.height);
+
                 const colors = maxValue === 10 ?
                     ['#ff4444', '#ff5544', '#ff6644', '#ff8844', '#ffaa44', '#ffcc44', '#ccdd44', '#aadd44', '#88dd44', '#44dd44'] :
                     ['#ff4444', '#ff8844', '#ffcc44', '#aadd44', '#44dd44'];
